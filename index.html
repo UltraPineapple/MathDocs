@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Справочник символов</title>
+    <style>
+      /* --- CSS VARIABLES & THEMING --- */
+      :root {
+        /* Light Theme (Default) */
+        --primary-color: #007bff;
+        --primary-hover: #0056b3;
+        --text-main: #1d1e20;
+        --text-secondary: #6c757d;
+        --bg-body: #ffffff;
+        --bg-header: #ffffff;
+        --bg-sidebar: #f8f9fa;
+        --bg-card: #ffffff;
+        --bg-input: #f1f3f5;
+        --border-color: #e9ecef;
+        --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --header-height: 64px;
+        --shortcut-bg: #fff;
+        --shortcut-border: #dee2e6;
+        --scroll-thumb: #ced4da;
+      }
+
+      /* Dark Theme Overrides */
+      body.dark-mode {
+        --primary-color: #4dabf7; /* Чуть светлее синий для темного фона */
+        --primary-hover: #339af0;
+        --text-main: #e1e1e1;
+        --text-secondary: #a0a0a0;
+        --bg-body: #121212;
+        --bg-header: #1e1e1e;
+        --bg-sidebar: #181818;
+        --bg-card: #1e1e1e;
+        --bg-input: #2d2d2d;
+        --border-color: #333333;
+        --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        --shortcut-bg: #333;
+        --shortcut-border: #444;
+        --scroll-thumb: #444;
+
+        color-scheme: dark; /* Для нативных скроллбаров */
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        margin: 0;
+        color: var(--text-main);
+        background-color: var(--bg-body);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      /* --- HEADER --- */
+      header {
+        height: var(--header-height);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 40px;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: var(--bg-header);
+        z-index: 100;
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+      }
+
+      .brand {
+        font-size: 20px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text-main);
+        text-decoration: none;
+      }
+      .brand span {
+        color: var(--primary-color);
+        font-size: 24px;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      /* Search */
+      .search-container {
+        position: relative;
+        width: 400px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 10px 15px 10px 40px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-input);
+        color: var(--text-main);
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+
+      .search-input:focus {
+        background-color: var(--bg-header);
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+      }
+
+      .shortcut-hint {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--shortcut-bg);
+        border: 1px solid var(--shortcut-border);
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 11px;
+        color: var(--text-secondary);
+        pointer-events: none;
+        font-family: monospace;
+      }
+
+      /* Theme Toggle Button */
+      .theme-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s, color 0.2s;
+      }
+
+      .theme-toggle:hover {
+        background-color: var(--bg-input);
+        color: var(--primary-color);
+      }
+
+      /* Скрываем/показываем иконки в зависимости от темы */
+      .theme-toggle .icon-moon {
+        display: block;
+      }
+      .theme-toggle .icon-sun {
+        display: none;
+      }
+
+      body.dark-mode .theme-toggle .icon-moon {
+        display: none;
+      }
+      body.dark-mode .theme-toggle .icon-sun {
+        display: block;
+      }
+
+      /* --- LAYOUT --- */
+      .layout {
+        display: flex;
+        margin-top: var(--header-height);
+        height: calc(100vh - var(--header-height));
+      }
+
+      /* --- SIDEBAR --- */
+      .sidebar {
+        width: 260px;
+        background-color: var(--bg-sidebar);
+        border-right: 1px solid var(--border-color);
+        padding: 30px 0;
+        overflow-y: auto;
+        flex-shrink: 0;
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      .nav-group-title {
+        padding: 0 25px;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        font-weight: 700;
+        margin-bottom: 10px;
+        letter-spacing: 0.5px;
+      }
+
+      .nav-item {
+        display: block;
+        padding: 8px 25px;
+        color: var(--text-main);
+        text-decoration: none;
+        font-size: 15px;
+        border-left: 3px solid transparent;
+        cursor: pointer;
+        transition: background 0.1s, color 0.1s;
+      }
+
+      .nav-item:hover {
+        background-color: var(--bg-body); /* В темной теме будет выделяться */
+        color: var(--primary-color);
+      }
+
+      .nav-item.active {
+        border-left-color: var(--primary-color);
+        background-color: var(--bg-body);
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+
+      /* --- CONTENT --- */
+      .main-content {
+        flex: 1;
+        padding: 40px 60px;
+        overflow-y: auto;
+        background-color: var(--bg-body);
+        transition: background-color 0.3s;
+      }
+
+      .category-header {
+        margin-bottom: 30px;
+      }
+      .category-header h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+      .category-header p {
+        color: var(--text-secondary);
+        margin-top: 5px;
+        font-size: 16px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 15px;
+      }
+
+      .symbol-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      .symbol-char {
+        font-size: 36px;
+        color: var(--text-main);
+        font-family: serif;
+        margin-bottom: 5px;
+        transition: color 0.3s;
+      }
+
+      .symbol-name {
+        font-size: 11px;
+        color: var(--text-secondary);
+        text-align: center;
+        padding: 0 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        text-transform: lowercase;
+      }
+
+      .symbol-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--card-hover-shadow);
+        border-color: var(--primary-color);
+      }
+
+      .symbol-card:hover .symbol-char {
+        color: var(--primary-color);
+      }
+
+      /* --- TOAST --- */
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background-color: #323232; /* Тост оставляем темным всегда для контраста */
+        color: white;
+        padding: 12px 20px;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        font-size: 14px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.3s, transform 0.3s;
+        pointer-events: none;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid #444;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--scroll-thumb);
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--text-secondary);
+      }
+
+      /* Mobile */
+      @media (max-width: 768px) {
+        header {
+          padding: 0 15px;
+        }
+        .header-left {
+          gap: 15px;
+        }
+        .search-container {
+          width: 150px;
+        }
+        .shortcut-hint {
+          display: none;
+        }
+        .layout {
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100%;
+          height: auto;
+          padding: 10px 15px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 5px;
+          border-bottom: 1px solid var(--border-color);
+        }
+        .nav-group-title {
+          display: none;
+        }
+        .nav-item {
+          padding: 5px 15px;
+          border: 1px solid var(--border-color);
+          border-radius: 20px;
+        }
+        .nav-item.active {
+          background: var(--primary-color);
+          color: white;
+          border-color: var(--primary-color);
+        }
+        .main-content {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-left">
+        <a href="#" class="brand"><span>∫</span> MathDocs</a>
+      </div>
+
+      <div class="header-right">
+        <div class="search-container">
+          <span class="search-icon">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input
+            type="text"
+            class="search-input"
+            id="searchInput"
+            placeholder="Поиск (Дельта, integral...)"
+          />
+          <div class="shortcut-hint">Ctrl + Space</div>
+        </div>
+
+        <button class="theme-toggle" id="themeToggle" title="Переключить тему">
+          <!-- Moon Icon (Visible in Light Mode) -->
+          <svg
+            class="icon-moon"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <!-- Sun Icon (Visible in Dark Mode) -->
+          <svg
+            class="icon-sun"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="sidebar">
+        <div class="nav-group-title">Разделы</div>
+        <a class="nav-item active" onclick="setCategory('math')">Математика</a>
+        <a class="nav-item" onclick="setCategory('physics')">Физика</a>
+        <a class="nav-item" onclick="setCategory('latin')">Латинские буквы</a>
+        <div class="nav-group-title" style="margin-top: 20px">Общее</div>
+        <a class="nav-item" onclick="setCategory('all')">Все символы</a>
+      </nav>
+
+      <main class="main-content">
+        <div class="category-header">
+          <h1 id="pageTitle">Математика</h1>
+          <p id="pageDesc">Основные операторы, логика и анализ.</p>
+        </div>
+        <div class="grid" id="grid"></div>
+      </main>
+    </div>
+
+    <div class="toast" id="toast">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#4ade80"
+        stroke-width="2"
+      >
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      <span id="toastText">Скопировано</span>
+    </div>
+
+    <script>
+      // --- ДАННЫЕ ---
+      const symbolsData = [
+        // --- МАТЕМАТИКА ---
+        {
+          char: "+",
+          tags: ["plus", "add", "math", "плюс", "сложение"],
+          name: "Plus",
+        },
+        {
+          char: "-",
+          tags: ["minus", "subtract", "math", "минус", "вычитание"],
+          name: "Minus",
+        },
+        {
+          char: "×",
+          tags: ["multiply", "times", "math", "умножение"],
+          name: "Multiply",
+        },
+        {
+          char: "÷",
+          tags: ["divide", "division", "math", "деление"],
+          name: "Divide",
+        },
+        {
+          char: "=",
+          tags: ["equal", "equals", "math", "равно"],
+          name: "Equal",
+        },
+        {
+          char: "≠",
+          tags: ["not equal", "unequal", "math", "не равно"],
+          name: "Not Equal",
+        },
+        {
+          char: "≈",
+          tags: ["approximate", "almost", "math", "physics", "примерно"],
+          name: "Approx",
+        },
+        {
+          char: "±",
+          tags: ["plus-minus", "math", "physics", "плюс-минус"],
+          name: "Plus-Minus",
+        },
+        {
+          char: "∞",
+          tags: ["infinity", "math", "physics", "бесконечность"],
+          name: "Infinity",
+        },
+        {
+          char: "√",
+          tags: ["root", "square root", "math", "корень"],
+          name: "Root",
+        },
+        {
+          char: "∫",
+          tags: ["integral", "math", "physics", "интеграл"],
+          name: "Integral",
+        },
+        { char: "∑", tags: ["sum", "sigma", "math", "сумма"], name: "Sum" },
+        {
+          char: "∏",
+          tags: ["product", "pi", "math", "произведение"],
+          name: "Product",
+        },
+        {
+          char: "∂",
+          tags: ["partial", "derivative", "math", "physics", "частная"],
+          name: "Partial",
+        },
+        {
+          char: "∇",
+          tags: ["nabla", "del", "math", "physics", "набла"],
+          name: "Nabla",
+        },
+        {
+          char: "∆",
+          tags: ["delta", "math", "physics", "дельта", "треугольник"],
+          name: "Delta",
+        },
+        { char: "∀", tags: ["for all", "math", "для всех"], name: "For All" },
+        { char: "∃", tags: ["exists", "math", "существует"], name: "Exists" },
+        {
+          char: "∈",
+          tags: ["element", "math", "принадлежит"],
+          name: "Element",
+        },
+        {
+          char: "∉",
+          tags: ["not element", "math", "не принадлежит"],
+          name: "Not Element",
+        },
+        { char: "∅", tags: ["empty", "math", "пусто"], name: "Empty Set" },
+        {
+          char: "≤",
+          tags: ["less equal", "math", "меньше равно"],
+          name: "Less Equal",
+        },
+        {
+          char: "≥",
+          tags: ["greater equal", "math", "больше равно"],
+          name: "Greater Equal",
+        },
+
+        // --- ФИЗИКА ---
+        { char: "α", tags: ["alpha", "physics", "альфа"], name: "Alpha" },
+        { char: "β", tags: ["beta", "physics", "бета"], name: "Beta" },
+        { char: "γ", tags: ["gamma", "physics", "гамма"], name: "Gamma" },
+        { char: "λ", tags: ["lambda", "physics", "лямбда"], name: "Lambda" },
+        {
+          char: "μ",
+          tags: ["mu", "micro", "physics", "мю", "микро"],
+          name: "Mu",
+        },
+        { char: "π", tags: ["pi", "math", "physics", "пи"], name: "Pi" },
+        {
+          char: "ρ",
+          tags: ["rho", "density", "physics", "ро", "плотность"],
+          name: "Rho",
+        },
+        {
+          char: "σ",
+          tags: ["sigma", "stress", "physics", "сигма"],
+          name: "Sigma",
+        },
+        {
+          char: "τ",
+          tags: ["tau", "time", "physics", "тау", "время"],
+          name: "Tau",
+        },
+        { char: "φ", tags: ["phi", "angle", "physics", "фи"], name: "Phi" },
+        {
+          char: "ω",
+          tags: ["omega", "frequency", "physics", "омега"],
+          name: "Omega",
+        },
+        {
+          char: "Ω",
+          tags: ["omega", "ohm", "resistance", "physics", "ом"],
+          name: "Ohm",
+        },
+        {
+          char: "ℏ",
+          tags: ["h-bar", "planck", "physics", "планк"],
+          name: "H-bar",
+        },
+        {
+          char: "Å",
+          tags: ["angstrom", "physics", "ангстрем"],
+          name: "Angstrom",
+        },
+        { char: "℃", tags: ["celsius", "physics", "цельсий"], name: "Celsius" },
+        { char: "°", tags: ["degree", "physics", "градус"], name: "Degree" },
+        {
+          char: "→",
+          tags: ["vector", "arrow", "physics", "вектор"],
+          name: "Vector",
+        },
+        {
+          char: "⊥",
+          tags: ["perpendicular", "physics", "перпендикуляр"],
+          name: "Perp",
+        },
+        {
+          char: "∥",
+          tags: ["parallel", "physics", "параллельно"],
+          name: "Parallel",
+        },
+        {
+          char: "⁰",
+          tags: ["0", "sup", "physics", "степень 0"],
+          name: "Sup 0",
+        },
+        {
+          char: "¹",
+          tags: ["1", "sup", "physics", "степень 1"],
+          name: "Sup 1",
+        },
+        {
+          char: "²",
+          tags: ["2", "sup", "physics", "степень 2", "квадрат"],
+          name: "Sup 2",
+        },
+        {
+          char: "³",
+          tags: ["3", "sup", "physics", "степень 3", "куб"],
+          name: "Sup 3",
+        },
+        { char: "₀", tags: ["0", "sub", "physics", "индекс 0"], name: "Sub 0" },
+        { char: "₁", tags: ["1", "sub", "physics", "индекс 1"], name: "Sub 1" },
+        { char: "₂", tags: ["2", "sub", "physics", "индекс 2"], name: "Sub 2" },
+        { char: "ᵢ", tags: ["i", "sub", "physics", "индекс i"], name: "Sub i" },
+
+        // --- ЛАТИНСКИЕ ---
+        { char: "A", tags: ["a", "latin", "letter"], name: "A" },
+        { char: "B", tags: ["b", "latin", "letter"], name: "B" },
+        { char: "C", tags: ["c", "latin", "letter"], name: "C" },
+        { char: "X", tags: ["x", "latin", "letter"], name: "X" },
+        { char: "Y", tags: ["y", "latin", "letter"], name: "Y" },
+        { char: "Z", tags: ["z", "latin", "letter"], name: "Z" },
+        {
+          char: "ℰ",
+          tags: ["emf", "physics", "latin", "эдс"],
+          name: "Script E",
+        },
+        {
+          char: "ℒ",
+          tags: ["lagrangian", "physics", "latin", "лагранжиан"],
+          name: "Script L",
+        },
+        {
+          char: "ℓ",
+          tags: ["l", "liter", "physics", "latin", "литр"],
+          name: "Script l",
+        },
+        {
+          char: "ℜ",
+          tags: ["real", "math", "latin", "вещественная"],
+          name: "Real",
+        },
+        {
+          char: "ℑ",
+          tags: ["imaginary", "math", "latin", "мнимая"],
+          name: "Imaginary",
+        },
+      ];
+
+      // --- ЛОГИКА ---
+      const grid = document.getElementById("grid");
+      const searchInput = document.getElementById("searchInput");
+      const pageTitle = document.getElementById("pageTitle");
+      const pageDesc = document.getElementById("pageDesc");
+      const navItems = document.querySelectorAll(".nav-item");
+      const toast = document.getElementById("toast");
+      const toastText = document.getElementById("toastText");
+      const themeToggle = document.getElementById("themeToggle");
+
+      const descriptions = {
+        math: "Основные математические операторы, символы логики и множеств.",
+        physics:
+          "Символы для записи формул, константы, греческий алфавит и индексы.",
+        latin: "Стандартные и специальные начертания латинских букв.",
+        all: "Полный список всех доступных символов.",
+      };
+
+      const titles = {
+        math: "Математика",
+        physics: "Физика",
+        latin: "Латинские буквы",
+        all: "Все символы",
+      };
+
+      let currentCategory = "math";
+
+      // 1. Инициализация Темы
+      // Проверяем сохраненную тему или настройки системы
+      const savedTheme = localStorage.getItem("theme");
+      const systemPrefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+
+      if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
+        document.body.classList.add("dark-mode");
+      }
+
+      // 2. Обработчик кнопки темы
+      themeToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+
+        // Сохраняем выбор пользователя
+        if (document.body.classList.contains("dark-mode")) {
+          localStorage.setItem("theme", "dark");
+        } else {
+          localStorage.setItem("theme", "light");
+        }
+      });
+
+      // 3. Логика приложения
+      setCategory("math");
+
+      function setCategory(cat) {
+        currentCategory = cat;
+        navItems.forEach((item) => {
+          if (item.getAttribute("onclick").includes(`'${cat}'`)) {
+            item.classList.add("active");
+          } else {
+            item.classList.remove("active");
+          }
+        });
+        pageTitle.textContent = titles[cat];
+        pageDesc.textContent = descriptions[cat];
+        searchInput.value = "";
+
+        const data =
+          cat === "all"
+            ? symbolsData
+            : symbolsData.filter((s) => s.tags.includes(cat));
+        render(data);
+      }
+
+      function render(data) {
+        grid.innerHTML = "";
+        if (data.length === 0) {
+          grid.innerHTML =
+            '<div style="grid-column: 1/-1; padding: 20px; color: var(--text-secondary);">Ничего не найдено.</div>';
+          return;
+        }
+
+        data.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "symbol-card";
+          card.innerHTML = `
+                    <div class="symbol-char">${item.char}</div>
+                    <div class="symbol-name">${item.name}</div>
+                `;
+          card.onclick = () => copyText(item.char);
+          grid.appendChild(card);
+        });
+      }
+
+      searchInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (!query) {
+          setCategory(currentCategory);
+          return;
+        }
+        pageTitle.textContent = "Результаты поиска";
+        pageDesc.textContent = `По запросу "${query}"`;
+        navItems.forEach((i) => i.classList.remove("active"));
+
+        const filtered = symbolsData.filter((item) => {
+          const inName = item.name.toLowerCase().includes(query);
+          const inTags = item.tags.some((t) => t.toLowerCase().includes(query));
+          return inName || inTags;
+        });
+        render(filtered);
+      });
+
+      function copyText(char) {
+        navigator.clipboard.writeText(char).then(() => {
+          toastText.textContent = `"${char}" скопирован`;
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 2000);
+        });
+      }
+
+      // 6. Хоткей Ctrl + /
+      document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "/") {
+          e.preventDefault(); // Чтобы не печаталось в поле, если фокус уже там
+          searchInput.focus();
+        }
+        if ((e.ctrlKey || e.metaKey) && e.code === "Space") {
+          e.preventDefault(); // Предотвращаем прокрутку страницы
+          searchInput.focus();
+        }
+      });
+    </script>
+  </body>
+</html>
