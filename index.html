@@ -1294,10 +1294,14 @@
       document.addEventListener("keydown", (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === "/") {
           e.preventDefault(); // Чтобы не печаталось в поле, если фокус уже там
+          searchInput.value = "";
+          setCategory(currentCategory);
           searchInput.focus();
         }
         if ((e.ctrlKey || e.metaKey) && e.code === "Space") {
           e.preventDefault(); // Предотвращаем прокрутку страницы
+          searchInput.value = "";
+          setCategory(currentCategory);
           searchInput.focus();
         }
       });
